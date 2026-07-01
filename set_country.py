@@ -1,0 +1,1 @@
+country = ['Cuba', 'Senegal', 'Tunisia', 'Vietnam']

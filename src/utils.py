@@ -10,6 +10,11 @@ class JSONSaver():
         self.filename = os.path.join(ROOT_DIR, "data", filename)
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
 
+    def clear_all(self) -> bool:
+        with open(self.filename, "w", encoding="utf-8") as f:
+            json.dump([], f, ensure_ascii=False, indent=4)
+        return True
+
     def read_data(self):
         try:
             with open(self.filename, "r", encoding="utf-8") as f:
@@ -22,35 +27,9 @@ class JSONSaver():
 
     def write_data(self, data):
         with open(self.filename, "w", encoding="utf-8") as f:
-            json.dump(data, f, ensure_ascii=False, indent=2)
+            json.dump(data, f, ensure_ascii=False, indent=4)
 
     def add_airplane(self, airplane: Airplane) -> None:
         data = self.read_data()
         data.append(airplane.to_dict())
         self.write_data(data)
-
-    def get_airplanes(self, **filters):
-        data = self.read_data()
-
-        def matches(record):
-            for key, value in filters.items():
-                if key not in record:
-                    return False
-                if record[key] != value:
-                    return False
-            return True
-
-        return [a for a in data if matches(a)]
-
-    def delete_airplane(self, airplane: Airplane) -> bool:
-        data = self.read_data()
-        initial_len = len(data)
-        data = [
-            a
-            for a in data
-            if not (a.get("callsign") == airplane.callsign and a.get("origin_country") == airplane.origin_country)
-        ]
-        if len(data) == initial_len:
-            return False
-        self.write_data(data)
-        return True

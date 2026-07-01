@@ -9,7 +9,7 @@ class APIAdapter():
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Gluyki/1.0 betonbar@bk.ru"})
 
-    def get_country_coordinates(self, country_list: list):
+    def get_country_coordinates(self, country_list: list[dict]):
         country_coordinates = []
         for country in country_list:
             params = {"q": country, "format": "json", "limit": 1}
@@ -42,16 +42,26 @@ class APIAdapter():
                 raise Exception(f"Ошибка при запросе к Nominatim: {str(e)}")
         return country_coordinates
 
-    def get_airplanes_in_area(self, south, north, west, east):
-        params = {"lamin": south, "lamax": north, "lomin": west, "lomax": east}
-        try:
-            response = self.session.get(self.OPENSKY_URL, params=params, timeout=15)
-            if response.status_code == 200:
-                data = response.json()
-                return data.get("states", []) if data else []
-            else:
-                raise Exception(f"Ошибка API OpenSky: {response.status_code}")
-        except requests.exceptions.Timeout:
-            raise Exception("Таймаут при запросе к OpenSky")
-        except Exception as e:
-            raise Exception(f"Ошибка при запросе к OpenSky: {str(e)}")
+    def get_airplanes_in_area(self, coords_list: list[dict]):
+
+        new_airplane_list = []
+        for coor in coords_list:
+            params = {
+                "lamin": coor['south'],
+                "lamax": coor['north'],
+                "lomin": coor['west'],
+                "lomax": coor['east']
+            }
+            try:
+                response = self.session.get(self.OPENSKY_URL, params=params, timeout=15)
+                if response.status_code == 200:
+                    data = response.json()
+                    total = data.get("states", []) if data else []
+                    new_airplane_list.append(total)
+                else:
+                    raise Exception(f"Ошибка API OpenSky: {response.status_code}")
+            except requests.exceptions.Timeout:
+                raise Exception("Таймаут при запросе к OpenSky")
+            except Exception as e:
+                raise Exception(f"Ошибка при запросе к OpenSky: {str(e)}")
+        return new_airplane_list

@@ -20,15 +20,16 @@ class Airplane:
     def cast_to_object_list(cls, data):
         airplanes = []
         for item in data:
-            try:
-                callsign = item[1] or "N/A"
-                origin_country = item[2] or "Unknown"
-                velocity = float(item[9]) * 3.6 if item[9] else 0
-                altitude = float(item[7]) if item[7] else 0
+            for i in item:
+                try:
+                    callsign = i[1] or "N/A"
+                    origin_country = i[2] or "Unknown"
+                    velocity = float(i[9]) * 3.6 if i[9] else 0
+                    altitude = float(i[7]) if i[7] else 0
 
-                airplanes.append(cls(callsign, origin_country, velocity, altitude))
-            except (ValueError, IndexError, TypeError):
-                continue
+                    airplanes.append(cls(callsign, origin_country, velocity, altitude))
+                except (ValueError, IndexError, TypeError):
+                    continue
         return airplanes
 
     def to_dict(self):
