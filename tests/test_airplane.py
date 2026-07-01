@@ -35,10 +35,11 @@ def test_altitude_no_raises(air_fly_1):
 
 def test_airplane_to_dict_(air_fly_3):
     data = air_fly_3.to_dict()
-    assert data == {'Cuba': {'altitude': 400,
-          'callsign': 'FRA50',
-          'origin_country': 'France',
-          'velocity': 600}}
+    assert data == {'country': 'Cuba',
+                    'altitude': 400,
+                    'callsign': 'FRA50',
+                    'origin_country': 'France',
+                    'velocity': 600}
 
 
 def test_cast_valid_open_sky_row(test_fly_2):
