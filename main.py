@@ -1,3 +1,5 @@
+from pprint import pprint
+
 from config import config
 from set_country import country
 from src import api_client
@@ -13,7 +15,6 @@ def main():
     coords = data.get_country_coordinates(country)
     airplane_country = data.get_airplanes_in_area(coords)
     airplan = Airplane.cast_to_object_list(airplane_country)
-
     for air in airplan:
         json_saver.add_airplane(air)
 

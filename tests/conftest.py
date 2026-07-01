@@ -20,29 +20,53 @@ def saver_with_temp_dir(monkeypatch):
 
 
 @pytest.fixture
-def test_fly_1():
-    return [[
-        [
-            "a53eef",
-            "UPS496",
-            "United States",
-            1782387534,
-            1782387534,
-            -95.6289,
-            46.154,
-            9144,
-            False,
-            194.9,
-            305.87,
-            0,
-            None,
-            9296.4,
-            None,
-            False,
-            0,
-        ]
-    ]]
+def in_area_list():
+    return [{'Cuba': {'east': -73.9190004,
+           'north': 23.4816972,
+           'south': 19.6275294,
+           'west': -85.1679702}}]
 
+
+@pytest.fixture
+def test_fly_1():
+    return [['ac67fc',
+            '',
+            'United States',
+            1782928012,
+            1782928012,
+            -83.3326,
+            23.3714,
+            11277.6,
+            False,
+            223.43,
+            49.86,
+            0,
+            None,
+            11940.54,
+            None,
+            False,
+            0]]
+
+
+@pytest.fixture
+def test_fly_2():
+    return [{'Cuba': [['ac67fc',
+                '',
+                'United States',
+                1782928012,
+                1782928012,
+                -83.3326,
+                23.3714,
+                11277.6,
+                False,
+                223.43,
+                49.86,
+                0,
+                None,
+                11940.54,
+                None,
+                False,
+                0]]}]
 
 @pytest.fixture
 def adapter():
@@ -52,7 +76,8 @@ def adapter():
 @pytest.fixture
 def air_fly_1():
     return Airplane(
-        callsign="UPS496", origin_country="United States", velocity=194.9, altitude=305.87)
+        country="Cuba", callsign="UPS496", origin_country="United States", velocity=194.9, altitude=305.87
+    )
 
 
 @pytest.fixture
@@ -62,4 +87,4 @@ def air_fly_2():
 
 @pytest.fixture
 def air_fly_3():
-    return Airplane(callsign="FRA50", origin_country="France", velocity=600, altitude=400)
+    return Airplane(country="Cuba", callsign="FRA50", origin_country="France", velocity=600, altitude=400)

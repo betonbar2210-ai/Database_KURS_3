@@ -28,11 +28,11 @@ def test_country_coordinates(adapter):
     with patch.object(adapter.session, "get", return_value=mock_response) as mock_get:
         result = adapter.get_country_coordinates(country)
 
-        assert result == [{
+        assert result == [{'Canada':{
             "south": float(expected_bbox[0]),
             "north": float(expected_bbox[1]),
             "west": float(expected_bbox[2]),
-            "east": float(expected_bbox[3]),
+            "east": float(expected_bbox[3])}
         }]
 
 
@@ -92,52 +92,47 @@ def test_nominatim_timeout_raises(adapter):
             adapter.get_country_coordinates(country)
 
 
-def test_airplanes_in_area_ok(adapter, test_fly_1):
-    coord = [{'south': 19.6275294, 'north': 23.4816972, 'west': -85.1679702, 'east': -73.9190004}]
+def test_airplanes_in_area_ok(adapter, in_area_list, test_fly_1, test_fly_2):
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {"states": test_fly_1}
 
-    with patch.object(adapter.session, "get", return_value=mock_response) as mock_get:
-        result = adapter.get_airplanes_in_area(coord)
-    assert result == [test_fly_1]
+    with patch.object(adapter.session, "get", return_value=mock_response):
+        result = adapter.get_airplanes_in_area(in_area_list)
+    assert result == test_fly_2
 
 
-def test_airplanes_in_area_key_no(adapter):
-    coord = [{'south': 19.6275294, 'north': 23.4816972, 'west': -85.1679702, 'east': -73.9190004}]
+def test_airplanes_in_area_key_no(adapter, in_area_list):
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {"states": []}
 
     with patch.object(adapter.session, "get", return_value=mock_response):
-        result = adapter.get_airplanes_in_area(coord)
-        assert result == [[]]
+        result = adapter.get_airplanes_in_area(in_area_list)
+        assert result == [{'Cuba': []}]
 
 
-def test_airplanes_in_area_no(adapter):
-    coord = [{'south': 19.6275294, 'north': 23.4816972, 'west': -85.1679702, 'east': -73.9190004}]
+def test_airplanes_in_area_no(adapter, in_area_list):
     mock_response = MagicMock()
     mock_response.status_code = 200
     mock_response.json.return_value = {}
 
     with patch.object(adapter.session, "get", return_value=mock_response):
-        result = adapter.get_airplanes_in_area(coord)
-        assert result == [[]]
+        result = adapter.get_airplanes_in_area(in_area_list)
+        assert result == [{'Cuba': []}]
 
 
-def test_opensky_no_200_raises(adapter):
-    coord = [{'south': 19.6275294, 'north': 23.4816972, 'west': -85.1679702, 'east': -73.9190004}]
+def test_opensky_no_200_raises(adapter, in_area_list):
     mock_response = MagicMock()
     mock_response.status_code = 429
     mock_response.json.side_effect = Exception("Не должен вызываться")
 
     with patch.object(adapter.session, "get", return_value=mock_response):
         with pytest.raises(Exception, match="Ошибка API OpenSky"):
-            adapter.get_airplanes_in_area(coord)
+            adapter.get_airplanes_in_area(in_area_list)
 
 
-def test_opensky_timeout_raises(adapter):
-    coord = [{'south': 19.6275294, 'north': 23.4816972, 'west': -85.1679702, 'east': -73.9190004}]
+def test_opensky_timeout_raises(adapter, in_area_list):
     with patch.object(adapter.session, "get", side_effect=requests.exceptions.Timeout):
         with pytest.raises(Exception, match="Таймаут при запросе к OpenSky"):
-            adapter.get_airplanes_in_area(coord)
+            adapter.get_airplanes_in_area(in_area_list)

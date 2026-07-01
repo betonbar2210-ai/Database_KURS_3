@@ -6,7 +6,7 @@ def test_read_data_empty_or_missing(saver_with_temp_dir):
 
 
 def test_add_and_read_one_airplane(saver_with_temp_dir):
-    plane = Airplane(callsign="TEST123", origin_country="TestLand", velocity=0, altitude=0)
+    plane = Airplane(country="Cuba", callsign="TEST123", origin_country="TestLand", velocity=0, altitude=0)
     saver_with_temp_dir.add_airplane(plane)
     data = saver_with_temp_dir.read_data()
     assert len(data) == 1
@@ -18,7 +18,7 @@ def test_add_and_read_one_airplane(saver_with_temp_dir):
 
 def test_add_multiple_airplanes_order(saver_with_temp_dir):
     planes = [
-        Airplane(callsign=f"MULTI{i}", origin_country="Land", velocity=0, altitude=0) for i in range(3)
+        Airplane(country="Cuba", callsign=f"MULTI{i}", origin_country="Land", velocity=0, altitude=0) for i in range(3)
     ]
     for p in planes:
         saver_with_temp_dir.add_airplane(p)

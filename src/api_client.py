@@ -2,6 +2,7 @@ import requests
 
 
 class APIAdapter():
+    """Получение координат стран и вывод данных по самолетам в их воздушном пространстве"""
     NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
     OPENSKY_URL = "https://opensky-network.org/api/states/all"
 
@@ -9,7 +10,8 @@ class APIAdapter():
         self.session = requests.Session()
         self.session.headers.update({"User-Agent": "Gluyki/1.0 betonbar@bk.ru"})
 
-    def get_country_coordinates(self, country_list: list[dict]):
+    def get_country_coordinates(self, country_list: list):
+        """Получение координат с сайта https://nominatim.openstreetmap.org"""
         country_coordinates = []
         for country in country_list:
             params = {"q": country, "format": "json", "limit": 1}
@@ -27,12 +29,12 @@ class APIAdapter():
                     if len(bbox) != 4:
                         raise Exception("Неверный формат boundingbox")
 
-                    bbox_save = {
+                    bbox_save = {country:{
                         "south": float(bbox[0]),
                         "north": float(bbox[1]),
                         "west": float(bbox[2]),
                         "east": float(bbox[3]),
-                    }
+                    }}
                     country_coordinates.append(bbox_save)
                 else:
                     raise Exception(f"Ошибка API Nominatim: {response.status_code}")
@@ -42,22 +44,26 @@ class APIAdapter():
                 raise Exception(f"Ошибка при запросе к Nominatim: {str(e)}")
         return country_coordinates
 
-    def get_airplanes_in_area(self, coords_list: list[dict]):
+    def get_airplanes_in_area(self, coords_list: list[dict]) -> list[list[list]]:
+        """Получает список словарей с координатами стран
+        возвращает список с данными о самолетах с сайта https://opensky-network.org"""
 
         new_airplane_list = []
         for coor in coords_list:
-            params = {
-                "lamin": coor['south'],
-                "lamax": coor['north'],
-                "lomin": coor['west'],
-                "lomax": coor['east']
-            }
+            for key, value in coor.items():
+                params = {
+                    "lamin": value['south'],
+                    "lamax": value['north'],
+                    "lomin": value['west'],
+                    "lomax": value['east']
+                }
             try:
                 response = self.session.get(self.OPENSKY_URL, params=params, timeout=15)
                 if response.status_code == 200:
                     data = response.json()
                     total = data.get("states", []) if data else []
-                    new_airplane_list.append(total)
+                    f = {key: total}
+                    new_airplane_list.append(f)
                 else:
                     raise Exception(f"Ошибка API OpenSky: {response.status_code}")
             except requests.exceptions.Timeout:
