@@ -1,8 +1,9 @@
 import requests
 
 
-class APIAdapter():
+class APIAdapter:
     """Получение координат стран и вывод данных по самолетам в их воздушном пространстве"""
+
     NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
     OPENSKY_URL = "https://opensky-network.org/api/states/all"
 
@@ -29,12 +30,14 @@ class APIAdapter():
                     if len(bbox) != 4:
                         raise Exception("Неверный формат boundingbox")
 
-                    bbox_save = {country:{
-                        "south": float(bbox[0]),
-                        "north": float(bbox[1]),
-                        "west": float(bbox[2]),
-                        "east": float(bbox[3]),
-                    }}
+                    bbox_save = {
+                        country: {
+                            "south": float(bbox[0]),
+                            "north": float(bbox[1]),
+                            "west": float(bbox[2]),
+                            "east": float(bbox[3]),
+                        }
+                    }
                     country_coordinates.append(bbox_save)
                 else:
                     raise Exception(f"Ошибка API Nominatim: {response.status_code}")
@@ -52,10 +55,10 @@ class APIAdapter():
         for coor in coords_list:
             for key, value in coor.items():
                 params = {
-                    "lamin": value['south'],
-                    "lamax": value['north'],
-                    "lomin": value['west'],
-                    "lomax": value['east']
+                    "lamin": value["south"],
+                    "lamax": value["north"],
+                    "lomin": value["west"],
+                    "lomax": value["east"],
                 }
             try:
                 response = self.session.get(self.OPENSKY_URL, params=params, timeout=15)

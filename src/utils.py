@@ -5,7 +5,7 @@ from config import ROOT_DIR
 from src.airplane import Airplane
 
 
-class JSONSaver():
+class JSONSaver:
     def __init__(self, filename: str = "airplanes.json"):
         self.filename = os.path.join(ROOT_DIR, "data", filename)
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
@@ -22,7 +22,7 @@ class JSONSaver():
                 if not isinstance(data, list):
                     return []
                 return data
-        except (FileNotFoundError, json.JSONDecodeError):
+        except FileNotFoundError, json.JSONDecodeError:
             return []
 
     def write_data(self, data):

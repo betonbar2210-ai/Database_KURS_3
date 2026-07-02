@@ -20,20 +20,20 @@ def test_country_coordinates(adapter):
     expected_bbox = ["41.6765597", "83.3362128", "-141.00275", "-52.3237664"]
     mock_response = MagicMock()
     mock_response.status_code = 200
-    mock_response.json.return_value = [
-        {
-            "boundingbox": expected_bbox
-        }
-    ]
-    with patch.object(adapter.session, "get", return_value=mock_response) as mock_get:
+    mock_response.json.return_value = [{"boundingbox": expected_bbox}]
+    with patch.object(adapter.session, "get", return_value=mock_response):
         result = adapter.get_country_coordinates(country)
 
-        assert result == [{'Canada':{
-            "south": float(expected_bbox[0]),
-            "north": float(expected_bbox[1]),
-            "west": float(expected_bbox[2]),
-            "east": float(expected_bbox[3])}
-        }]
+        assert result == [
+            {
+                "Canada": {
+                    "south": float(expected_bbox[0]),
+                    "north": float(expected_bbox[1]),
+                    "west": float(expected_bbox[2]),
+                    "east": float(expected_bbox[3]),
+                }
+            }
+        ]
 
 
 def test_country_coordinates_no_country(adapter):
@@ -109,7 +109,7 @@ def test_airplanes_in_area_key_no(adapter, in_area_list):
 
     with patch.object(adapter.session, "get", return_value=mock_response):
         result = adapter.get_airplanes_in_area(in_area_list)
-        assert result == [{'Cuba': []}]
+        assert result == [{"Cuba": []}]
 
 
 def test_airplanes_in_area_no(adapter, in_area_list):
@@ -119,7 +119,7 @@ def test_airplanes_in_area_no(adapter, in_area_list):
 
     with patch.object(adapter.session, "get", return_value=mock_response):
         result = adapter.get_airplanes_in_area(in_area_list)
-        assert result == [{'Cuba': []}]
+        assert result == [{"Cuba": []}]
 
 
 def test_opensky_no_200_raises(adapter, in_area_list):
